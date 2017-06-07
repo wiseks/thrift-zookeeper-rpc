@@ -26,6 +26,8 @@ public class Client {
 			final ApplicationContext context = new ClassPathXmlApplicationContext("spring-context-thrift-client.xml");
 			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
 			System.out.println(echoSerivce.echo("hello--echo"));
+			User user = echoSerivce.getUser();
+			System.out.println(">>>>>>>>>"+user.getUserId()+","+user.getName());
 			//关闭连接的钩子
 			Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {

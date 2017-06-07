@@ -12,7 +12,7 @@
 	<bean id="thriftZookeeper" class="cn.slimsmart.thrift.rpc.zookeeper.ZookeeperFactory"
 		destroy-method="close">
 		<property name="zkHosts"
-			value="192.168.1.90:2181" />
+			value="127.0.0.1:2181" />
 		<property name="namespace" value="cn.slimsmart.thrift.rpc.demo" />
 		<property name="connectionTimeout" value="3000" />
 		<property name="sessionTimeout" value="3000" />
@@ -28,7 +28,7 @@
 	<bean id="echoSerivce" class="cn.slimsmart.thrift.rpc.ThriftServiceServerFactory"
 		destroy-method="close">
 		<property name="service" ref="echoSerivceImpl" />
-		<property name="port" value="9000" />
+		<property name="port" value="9003" />
 		<property name="version" value="1.0.0" />
 		<property name="weight" value="1" />
 		<property name="thriftServerAddressRegister" ref="sericeAddressRegister" />
@@ -37,7 +37,7 @@
 	<bean id="echoSerivce1" class="cn.slimsmart.thrift.rpc.ThriftServiceServerFactory"
 		destroy-method="close">
 		<property name="service" ref="echoSerivceImpl" />
-		<property name="port" value="9001" />
+		<property name="port" value="9004" />
 		<property name="version" value="1.0.0" />
 		<property name="weight" value="1" />
 		<property name="thriftServerAddressRegister" ref="sericeAddressRegister" />
@@ -46,7 +46,7 @@
 	<bean id="echoSerivce2" class="cn.slimsmart.thrift.rpc.ThriftServiceServerFactory"
 		destroy-method="close">
 		<property name="service" ref="echoSerivceImpl" />
-		<property name="port" value="9002" />
+		<property name="port" value="9005" />
 		<property name="version" value="1.0.0" />
 		<property name="weight" value="1" />
 		<property name="thriftServerAddressRegister" ref="sericeAddressRegister" />
