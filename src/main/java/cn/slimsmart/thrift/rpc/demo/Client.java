@@ -28,7 +28,7 @@ public class Client {
 			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getService(EchoSerivce.Iface.class);
 //			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
 			System.out.println(echoSerivce.echo("hello--echo"));
-			User user = echoSerivce.getUser();
+			User user = echoSerivce.getUser(111L,0,0);
 			System.out.println(">>>>>>>>>"+user.getUserId()+","+user.getName());
 			//关闭连接的钩子
 			Runtime.getRuntime().addShutdownHook(new Thread() {

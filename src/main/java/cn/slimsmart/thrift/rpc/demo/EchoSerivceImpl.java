@@ -11,7 +11,7 @@ public class EchoSerivceImpl implements EchoSerivce.Iface {
 	}
 
 	@Override
-	public User getUser() throws TException {
+	public User getUser(long playerId,int x,int y) throws TException {
 		User user = new User();
 		user.setUserId(888);
 		user.setName("tom");
