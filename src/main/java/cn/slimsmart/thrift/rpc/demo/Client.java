@@ -24,7 +24,9 @@ public class Client {
 	public static void spring() {
 		try {
 			final ApplicationContext context = new ClassPathXmlApplicationContext("spring-context-thrift-client.xml");
-			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
+			ThriftServiceClientProxyFactory factory = context.getBean(ThriftServiceClientProxyFactory.class);
+			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getService(EchoSerivce.Iface.class);
+//			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
 			System.out.println(echoSerivce.echo("hello--echo"));
 			User user = echoSerivce.getUser();
 			System.out.println(">>>>>>>>>"+user.getUserId()+","+user.getName());
@@ -63,14 +65,26 @@ public class Client {
 
 	public static void simple() {
 		try {
-			TSocket socket = new TSocket("192.168.36.215", 9001);
+			
+			long start = System.currentTimeMillis();
+			TSocket socket = new TSocket("127.0.0.1", 9003);
 			TTransport transport = new TFramedTransport(socket);
 			TProtocol protocol = new TBinaryProtocol(transport);
 			EchoSerivce.Client client = new EchoSerivce.Client(protocol);
-			transport.open();
-			System.out.println(client.echo("helloword"));
+			for(int i=0;i<100000;i++){
+				boolean isOpen = transport.isOpen();
+				boolean isOpen1 = socket.isOpen();
+				if(!isOpen&&!isOpen1){
+					transport.open();
+				}
+				client.echo("helloword");
+				transport.close();
+				socket.close();
+			}
+			long end = System.currentTimeMillis();
+			long useTime = (end-start);
+			System.out.println("useTime:"+useTime);
 			Thread.sleep(3000);
-			transport.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
