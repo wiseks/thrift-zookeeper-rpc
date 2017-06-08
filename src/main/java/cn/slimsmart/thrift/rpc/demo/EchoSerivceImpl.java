@@ -17,4 +17,10 @@ public class EchoSerivceImpl implements EchoSerivce.Iface {
 		user.setName("tom");
 		return user;
 	}
+
+	@Override
+	public WorldViewTileResp viewWorld(long playerId, int x, int y) throws TException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

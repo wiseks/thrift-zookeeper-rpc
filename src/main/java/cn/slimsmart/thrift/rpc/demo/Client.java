@@ -1,5 +1,6 @@
 package cn.slimsmart.thrift.rpc.demo;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -30,6 +31,10 @@ public class Client {
 			System.out.println(echoSerivce.echo("hello--echo"));
 			User user = echoSerivce.getUser(111L,0,0);
 			System.out.println(">>>>>>>>>"+user.getUserId()+","+user.getName());
+			
+			WorldViewTileResp resp = echoSerivce.viewWorld(222L, 1, 1);
+			List<WorldTileData> info = resp.getInfos();
+			System.out.println("info:"+info);
 			//关闭连接的钩子
 			Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {

@@ -43,6 +43,8 @@ public class EchoSerivce {
 
     public User getUser(long playerId, int x, int y) throws org.apache.thrift.TException;
 
+    public WorldViewTileResp viewWorld(long playerId, int x, int y) throws org.apache.thrift.TException;
+
   }
 
   public interface AsyncIface {
@@ -50,6 +52,8 @@ public class EchoSerivce {
     public void echo(String msg, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getUser(long playerId, int x, int y, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void viewWorld(long playerId, int x, int y, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -119,6 +123,31 @@ public class EchoSerivce {
         return result.success;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getUser failed: unknown result");
+    }
+
+    public WorldViewTileResp viewWorld(long playerId, int x, int y) throws org.apache.thrift.TException
+    {
+      send_viewWorld(playerId, x, y);
+      return recv_viewWorld();
+    }
+
+    public void send_viewWorld(long playerId, int x, int y) throws org.apache.thrift.TException
+    {
+      viewWorld_args args = new viewWorld_args();
+      args.setPlayerId(playerId);
+      args.setX(x);
+      args.setY(y);
+      sendBase("viewWorld", args);
+    }
+
+    public WorldViewTileResp recv_viewWorld() throws org.apache.thrift.TException
+    {
+      viewWorld_result result = new viewWorld_result();
+      receiveBase(result, "viewWorld");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "viewWorld failed: unknown result");
     }
 
   }
@@ -209,6 +238,44 @@ public class EchoSerivce {
       }
     }
 
+    public void viewWorld(long playerId, int x, int y, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      viewWorld_call method_call = new viewWorld_call(playerId, x, y, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class viewWorld_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private long playerId;
+      private int x;
+      private int y;
+      public viewWorld_call(long playerId, int x, int y, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.playerId = playerId;
+        this.x = x;
+        this.y = y;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("viewWorld", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        viewWorld_args args = new viewWorld_args();
+        args.setPlayerId(playerId);
+        args.setX(x);
+        args.setY(y);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public WorldViewTileResp getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_viewWorld();
+      }
+    }
+
   }
 
   public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
@@ -224,6 +291,7 @@ public class EchoSerivce {
     private static <I extends Iface> Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> getProcessMap(Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
       processMap.put("echo", new echo());
       processMap.put("getUser", new getUser());
+      processMap.put("viewWorld", new viewWorld());
       return processMap;
     }
 
@@ -267,6 +335,26 @@ public class EchoSerivce {
       }
     }
 
+    public static class viewWorld<I extends Iface> extends org.apache.thrift.ProcessFunction<I, viewWorld_args> {
+      public viewWorld() {
+        super("viewWorld");
+      }
+
+      public viewWorld_args getEmptyArgsInstance() {
+        return new viewWorld_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public viewWorld_result getResult(I iface, viewWorld_args args) throws org.apache.thrift.TException {
+        viewWorld_result result = new viewWorld_result();
+        result.success = iface.viewWorld(args.playerId, args.x, args.y);
+        return result;
+      }
+    }
+
   }
 
   public static class AsyncProcessor<I extends AsyncIface> extends org.apache.thrift.TBaseAsyncProcessor<I> {
@@ -282,6 +370,7 @@ public class EchoSerivce {
     private static <I extends AsyncIface> Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
       processMap.put("echo", new echo());
       processMap.put("getUser", new getUser());
+      processMap.put("viewWorld", new viewWorld());
       return processMap;
     }
 
@@ -384,6 +473,57 @@ public class EchoSerivce {
 
       public void start(I iface, getUser_args args, org.apache.thrift.async.AsyncMethodCallback<User> resultHandler) throws TException {
         iface.getUser(args.playerId, args.x, args.y,resultHandler);
+      }
+    }
+
+    public static class viewWorld<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, viewWorld_args, WorldViewTileResp> {
+      public viewWorld() {
+        super("viewWorld");
+      }
+
+      public viewWorld_args getEmptyArgsInstance() {
+        return new viewWorld_args();
+      }
+
+      public AsyncMethodCallback<WorldViewTileResp> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<WorldViewTileResp>() { 
+          public void onComplete(WorldViewTileResp o) {
+            viewWorld_result result = new viewWorld_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            viewWorld_result result = new viewWorld_result();
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, viewWorld_args args, org.apache.thrift.async.AsyncMethodCallback<WorldViewTileResp> resultHandler) throws TException {
+        iface.viewWorld(args.playerId, args.x, args.y,resultHandler);
       }
     }
 
@@ -2023,6 +2163,926 @@ public class EchoSerivce {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           struct.success = new User();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class viewWorld_args implements org.apache.thrift.TBase<viewWorld_args, viewWorld_args._Fields>, java.io.Serializable, Cloneable, Comparable<viewWorld_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("viewWorld_args");
+
+    private static final org.apache.thrift.protocol.TField PLAYER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("playerId", org.apache.thrift.protocol.TType.I64, (short)1);
+    private static final org.apache.thrift.protocol.TField X_FIELD_DESC = new org.apache.thrift.protocol.TField("x", org.apache.thrift.protocol.TType.I32, (short)2);
+    private static final org.apache.thrift.protocol.TField Y_FIELD_DESC = new org.apache.thrift.protocol.TField("y", org.apache.thrift.protocol.TType.I32, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new viewWorld_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new viewWorld_argsTupleSchemeFactory());
+    }
+
+    public long playerId; // required
+    public int x; // required
+    public int y; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      PLAYER_ID((short)1, "playerId"),
+      X((short)2, "x"),
+      Y((short)3, "y");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // PLAYER_ID
+            return PLAYER_ID;
+          case 2: // X
+            return X;
+          case 3: // Y
+            return Y;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __PLAYERID_ISSET_ID = 0;
+    private static final int __X_ISSET_ID = 1;
+    private static final int __Y_ISSET_ID = 2;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.PLAYER_ID, new org.apache.thrift.meta_data.FieldMetaData("playerId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+      tmpMap.put(_Fields.X, new org.apache.thrift.meta_data.FieldMetaData("x", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.Y, new org.apache.thrift.meta_data.FieldMetaData("y", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(viewWorld_args.class, metaDataMap);
+    }
+
+    public viewWorld_args() {
+    }
+
+    public viewWorld_args(
+      long playerId,
+      int x,
+      int y)
+    {
+      this();
+      this.playerId = playerId;
+      setPlayerIdIsSet(true);
+      this.x = x;
+      setXIsSet(true);
+      this.y = y;
+      setYIsSet(true);
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public viewWorld_args(viewWorld_args other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.playerId = other.playerId;
+      this.x = other.x;
+      this.y = other.y;
+    }
+
+    public viewWorld_args deepCopy() {
+      return new viewWorld_args(this);
+    }
+
+    @Override
+    public void clear() {
+      setPlayerIdIsSet(false);
+      this.playerId = 0;
+      setXIsSet(false);
+      this.x = 0;
+      setYIsSet(false);
+      this.y = 0;
+    }
+
+    public long getPlayerId() {
+      return this.playerId;
+    }
+
+    public viewWorld_args setPlayerId(long playerId) {
+      this.playerId = playerId;
+      setPlayerIdIsSet(true);
+      return this;
+    }
+
+    public void unsetPlayerId() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PLAYERID_ISSET_ID);
+    }
+
+    /** Returns true if field playerId is set (has been assigned a value) and false otherwise */
+    public boolean isSetPlayerId() {
+      return EncodingUtils.testBit(__isset_bitfield, __PLAYERID_ISSET_ID);
+    }
+
+    public void setPlayerIdIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PLAYERID_ISSET_ID, value);
+    }
+
+    public int getX() {
+      return this.x;
+    }
+
+    public viewWorld_args setX(int x) {
+      this.x = x;
+      setXIsSet(true);
+      return this;
+    }
+
+    public void unsetX() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __X_ISSET_ID);
+    }
+
+    /** Returns true if field x is set (has been assigned a value) and false otherwise */
+    public boolean isSetX() {
+      return EncodingUtils.testBit(__isset_bitfield, __X_ISSET_ID);
+    }
+
+    public void setXIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __X_ISSET_ID, value);
+    }
+
+    public int getY() {
+      return this.y;
+    }
+
+    public viewWorld_args setY(int y) {
+      this.y = y;
+      setYIsSet(true);
+      return this;
+    }
+
+    public void unsetY() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __Y_ISSET_ID);
+    }
+
+    /** Returns true if field y is set (has been assigned a value) and false otherwise */
+    public boolean isSetY() {
+      return EncodingUtils.testBit(__isset_bitfield, __Y_ISSET_ID);
+    }
+
+    public void setYIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __Y_ISSET_ID, value);
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case PLAYER_ID:
+        if (value == null) {
+          unsetPlayerId();
+        } else {
+          setPlayerId((Long)value);
+        }
+        break;
+
+      case X:
+        if (value == null) {
+          unsetX();
+        } else {
+          setX((Integer)value);
+        }
+        break;
+
+      case Y:
+        if (value == null) {
+          unsetY();
+        } else {
+          setY((Integer)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case PLAYER_ID:
+        return Long.valueOf(getPlayerId());
+
+      case X:
+        return Integer.valueOf(getX());
+
+      case Y:
+        return Integer.valueOf(getY());
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case PLAYER_ID:
+        return isSetPlayerId();
+      case X:
+        return isSetX();
+      case Y:
+        return isSetY();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof viewWorld_args)
+        return this.equals((viewWorld_args)that);
+      return false;
+    }
+
+    public boolean equals(viewWorld_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_playerId = true;
+      boolean that_present_playerId = true;
+      if (this_present_playerId || that_present_playerId) {
+        if (!(this_present_playerId && that_present_playerId))
+          return false;
+        if (this.playerId != that.playerId)
+          return false;
+      }
+
+      boolean this_present_x = true;
+      boolean that_present_x = true;
+      if (this_present_x || that_present_x) {
+        if (!(this_present_x && that_present_x))
+          return false;
+        if (this.x != that.x)
+          return false;
+      }
+
+      boolean this_present_y = true;
+      boolean that_present_y = true;
+      if (this_present_y || that_present_y) {
+        if (!(this_present_y && that_present_y))
+          return false;
+        if (this.y != that.y)
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_playerId = true;
+      list.add(present_playerId);
+      if (present_playerId)
+        list.add(playerId);
+
+      boolean present_x = true;
+      list.add(present_x);
+      if (present_x)
+        list.add(x);
+
+      boolean present_y = true;
+      list.add(present_y);
+      if (present_y)
+        list.add(y);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(viewWorld_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetPlayerId()).compareTo(other.isSetPlayerId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetPlayerId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.playerId, other.playerId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetX()).compareTo(other.isSetX());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetX()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.x, other.x);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetY()).compareTo(other.isSetY());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetY()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.y, other.y);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("viewWorld_args(");
+      boolean first = true;
+
+      sb.append("playerId:");
+      sb.append(this.playerId);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("x:");
+      sb.append(this.x);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("y:");
+      sb.append(this.y);
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class viewWorld_argsStandardSchemeFactory implements SchemeFactory {
+      public viewWorld_argsStandardScheme getScheme() {
+        return new viewWorld_argsStandardScheme();
+      }
+    }
+
+    private static class viewWorld_argsStandardScheme extends StandardScheme<viewWorld_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, viewWorld_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // PLAYER_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+                struct.playerId = iprot.readI64();
+                struct.setPlayerIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // X
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.x = iprot.readI32();
+                struct.setXIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // Y
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.y = iprot.readI32();
+                struct.setYIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, viewWorld_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldBegin(PLAYER_ID_FIELD_DESC);
+        oprot.writeI64(struct.playerId);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(X_FIELD_DESC);
+        oprot.writeI32(struct.x);
+        oprot.writeFieldEnd();
+        oprot.writeFieldBegin(Y_FIELD_DESC);
+        oprot.writeI32(struct.y);
+        oprot.writeFieldEnd();
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class viewWorld_argsTupleSchemeFactory implements SchemeFactory {
+      public viewWorld_argsTupleScheme getScheme() {
+        return new viewWorld_argsTupleScheme();
+      }
+    }
+
+    private static class viewWorld_argsTupleScheme extends TupleScheme<viewWorld_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, viewWorld_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetPlayerId()) {
+          optionals.set(0);
+        }
+        if (struct.isSetX()) {
+          optionals.set(1);
+        }
+        if (struct.isSetY()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetPlayerId()) {
+          oprot.writeI64(struct.playerId);
+        }
+        if (struct.isSetX()) {
+          oprot.writeI32(struct.x);
+        }
+        if (struct.isSetY()) {
+          oprot.writeI32(struct.y);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, viewWorld_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.playerId = iprot.readI64();
+          struct.setPlayerIdIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.x = iprot.readI32();
+          struct.setXIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.y = iprot.readI32();
+          struct.setYIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class viewWorld_result implements org.apache.thrift.TBase<viewWorld_result, viewWorld_result._Fields>, java.io.Serializable, Cloneable, Comparable<viewWorld_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("viewWorld_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new viewWorld_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new viewWorld_resultTupleSchemeFactory());
+    }
+
+    public WorldViewTileResp success; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT          , "WorldViewTileResp")));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(viewWorld_result.class, metaDataMap);
+    }
+
+    public viewWorld_result() {
+    }
+
+    public viewWorld_result(
+      WorldViewTileResp success)
+    {
+      this();
+      this.success = success;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public viewWorld_result(viewWorld_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
+    }
+
+    public viewWorld_result deepCopy() {
+      return new viewWorld_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+    }
+
+    public WorldViewTileResp getSuccess() {
+      return this.success;
+    }
+
+    public viewWorld_result setSuccess(WorldViewTileResp success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((WorldViewTileResp)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof viewWorld_result)
+        return this.equals((viewWorld_result)that);
+      return false;
+    }
+
+    public boolean equals(viewWorld_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      List<Object> list = new ArrayList<Object>();
+
+      boolean present_success = true && (isSetSuccess());
+      list.add(present_success);
+      if (present_success)
+        list.add(success);
+
+      return list.hashCode();
+    }
+
+    @Override
+    public int compareTo(viewWorld_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("viewWorld_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class viewWorld_resultStandardSchemeFactory implements SchemeFactory {
+      public viewWorld_resultStandardScheme getScheme() {
+        return new viewWorld_resultStandardScheme();
+      }
+    }
+
+    private static class viewWorld_resultStandardScheme extends StandardScheme<viewWorld_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, viewWorld_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new WorldViewTileResp();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, viewWorld_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class viewWorld_resultTupleSchemeFactory implements SchemeFactory {
+      public viewWorld_resultTupleScheme getScheme() {
+        return new viewWorld_resultTupleScheme();
+      }
+    }
+
+    private static class viewWorld_resultTupleScheme extends TupleScheme<viewWorld_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, viewWorld_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, viewWorld_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.success = new WorldViewTileResp();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
