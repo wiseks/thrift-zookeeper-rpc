@@ -73,9 +73,9 @@ public class ThriftClientPoolFactory extends BasePoolableObjectFactory<TServiceC
 	@Override
 	public boolean validateObject(TServiceClient client) {
 		TTransport pin = client.getInputProtocol().getTransport();
-		logger.info("validateObject input:{}", pin.isOpen());
+		//logger.info("validateObject input:{}", pin.isOpen());
 		TTransport pout = client.getOutputProtocol().getTransport();
-		logger.info("validateObject output:{}", pout.isOpen());
+		//logger.info("validateObject output:{}", pout.isOpen());
 		return pin.isOpen() && pout.isOpen();
 	}
 

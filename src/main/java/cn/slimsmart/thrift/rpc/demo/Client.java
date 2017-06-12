@@ -1,8 +1,10 @@
 package cn.slimsmart.thrift.rpc.demo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -11,6 +13,7 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 
 import cn.slimsmart.thrift.rpc.ThriftServiceClientProxyFactory;
 
@@ -31,10 +34,26 @@ public class Client {
 			System.out.println(echoSerivce.echo("hello--echo"));
 			User user = echoSerivce.getUser(111L,0,0);
 			System.out.println(">>>>>>>>>"+user.getUserId()+","+user.getName());
-			
-			WorldViewTileResp resp = echoSerivce.viewWorld(222L, 1, 1);
-			List<WorldTileData> info = resp.getInfos();
-			System.out.println("info:"+info);
+			Random random = new Random();
+			List<Integer> xList = new ArrayList<Integer>();
+			List<Integer> yList = new ArrayList<Integer>();
+			for(int i=-1000;i<=1000;i++){
+				xList.add(i);
+				yList.add(i);
+			}
+			for(int i=0;i<=200000;i++){
+				long playerId = i;// BeanUtil.idGenerator.nextId();
+				Cache.playerIds.put(i, playerId);
+			}
+			long start = System.currentTimeMillis();
+			for(int i=0;i<=200000;i++){
+				int x = xList.get(random.nextInt(xList.size()));
+				int y = yList.get(random.nextInt(xList.size()));
+				WorldViewTileResp resp = echoSerivce.viewWorld(Cache.playerIds.get(i), x, y);
+				List<WorldTileData> info = resp.getInfos();
+			}
+			long endTime = System.currentTimeMillis();
+			System.out.println("needTime="+(endTime-start));
 			//关闭连接的钩子
 			Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
