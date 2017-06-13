@@ -42,8 +42,6 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 	private Integer idleTime = 180000;
 	private ThriftServerAddressProvider serverAddressProvider;
 
-	private Map<Class<?>,Object> map = new HashMap<>();
-	
 	private Map<Integer,Map<Class<?>,Object>> serverIdToMap = new HashMap<>();
 
 	private List<GenericObjectPool<TServiceClient>> clusterPoolList = new ArrayList<>();
@@ -124,7 +122,6 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 							}
 						});
 						currentMap.put(objectClass, proxyClient);
-						map.put(objectClass, proxyClient);
 					}
 				}
 			} catch (IOException e) {
@@ -157,10 +154,6 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 
 	public void setServerAddressProvider(ThriftServerAddressProvider serverAddressProvider) {
 		this.serverAddressProvider = serverAddressProvider;
-	}
-	
-	public Object getService(Class<?> clazz){
-		return map.get(clazz);
 	}
 	
 	public Object getServiceByServerId(int serverId,Class<?> clazz){
