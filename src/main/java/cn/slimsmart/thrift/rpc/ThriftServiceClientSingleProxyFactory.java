@@ -89,7 +89,7 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 							currentMap = new HashMap<>();
 							serverIdToMap.put(serverId, currentMap);
 						}
-						ThriftClientSinglePoolFactory clientClusterPool = new ThriftClientSinglePoolFactory(serverAddressProvider, clientFactory, callback, serverId);
+						ThriftClientPoolSingleFactory clientClusterPool = new ThriftClientPoolSingleFactory(serverAddressProvider, clientFactory, callback, serverId);
 						GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
 						poolConfig.maxActive = maxActive;
 						poolConfig.maxIdle = 1;
