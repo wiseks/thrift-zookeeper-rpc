@@ -98,7 +98,7 @@ public class ThriftServiceServerFactory implements InitializingBean ,Closeable{
 				processor = (TProcessor) constructor.newInstance(service);
 				break;
 			} catch (Exception e) {
-				//
+				e.printStackTrace();
 			}
 		}
 		if (processor == null) {
