@@ -131,7 +131,7 @@ public class ThriftServiceServerFactory implements InitializingBean ,Closeable{
 				//启动服务
 				server.serve();
 			}catch(Exception e){
-				//
+				e.printStackTrace();
 			}
 		}
 		
