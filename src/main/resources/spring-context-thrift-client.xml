@@ -42,7 +42,7 @@
         	</bean>
         </property>
     </bean>
-    <bean id="echoSingleSerivce" class="cn.slimsmart.thrift.rpc.ThriftServiceSingleClientProxyFactory" destroy-method="close">
+    <bean id="echoSingleSerivce" class="cn.slimsmart.thrift.rpc.ThriftServiceClientSingleProxyFactory" destroy-method="close">
         <property name="maxActive" value="5" />
         <property name="idleTime" value="1800000" />
         <property name="serverAddressProvider">
