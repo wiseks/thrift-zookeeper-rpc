@@ -5,6 +5,7 @@ import java.io.Closeable;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.CreateMode;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.util.StringUtils;
 
@@ -27,6 +28,8 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> ,Closeabl
 	private final static String ROOT = "rpc";
 
 	private CuratorFramework zkClient;
+	
+	private int serverId;
 
 	public void setZkHosts(String zkHosts) {
 		this.zkHosts = zkHosts;
@@ -58,10 +61,14 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> ,Closeabl
 			if (zkClient == null) {
 				zkClient = create();
 				zkClient.start();
+				zkClient.create().withMode(CreateMode.PERSISTENT);
+				zkClient.setData().forPath("/", String.valueOf(serverId).getBytes("utf-8"));
 			}
 			return zkClient;
 		}
-		return create();
+		CuratorFramework client = create();
+		client.setData().forPath("/", String.valueOf(serverId).getBytes("utf-8"));
+		return client;
 	}
 
 	@Override
@@ -80,14 +87,15 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> ,Closeabl
 		} else {
 			namespace = ROOT +"/"+ namespace;
 		}
-		return create(zkHosts, sessionTimeout, connectionTimeout, namespace);
+		return create(zkHosts, sessionTimeout, connectionTimeout, namespace,serverId);
 	}
 
-	public static CuratorFramework create(String connectString, int sessionTimeout, int connectionTimeout, String namespace) {
+	public static CuratorFramework create(String connectString, int sessionTimeout, int connectionTimeout, String namespace,int serverId) {
 		CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
-		return builder.connectString(connectString).sessionTimeoutMs(sessionTimeout).connectionTimeoutMs(30000)
+		CuratorFramework client =  builder.connectString(connectString).sessionTimeoutMs(sessionTimeout).connectionTimeoutMs(30000)
 				.canBeReadOnly(true).namespace(namespace).retryPolicy(new ExponentialBackoffRetry(1000, Integer.MAX_VALUE))
-				.defaultData(null).build();
+				.defaultData(String.valueOf(serverId).getBytes()).build();
+		return client;
 	}
 
 	public void close() {
@@ -95,4 +103,14 @@ public class ZookeeperFactory implements FactoryBean<CuratorFramework> ,Closeabl
 			zkClient.close();
 		}
 	}
+
+	public int getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(int serverId) {
+		this.serverId = serverId;
+	}
+	
+	
 }

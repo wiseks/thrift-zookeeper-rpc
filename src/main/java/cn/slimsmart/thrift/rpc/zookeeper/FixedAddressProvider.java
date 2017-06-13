@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -30,8 +31,8 @@ public class FixedAddressProvider implements ThriftServerAddressProvider,Initial
     }
 
 	@Override
-	public List<InetSocketAddress> findServerAddressList() {
-		return Collections.unmodifiableList(container);
+	public Map<Integer,List<InetSocketAddress>> findServerAddressList() {
+		return null;//container;
 	}
 
 	@Override
@@ -82,5 +83,11 @@ public class FixedAddressProvider implements ThriftServerAddressProvider,Initial
         //随机
         Collections.shuffle(container);
         inner.addAll(container);
+	}
+
+	@Override
+	public InetSocketAddress findServerAddress(int serverId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

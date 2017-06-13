@@ -18,26 +18,31 @@ import cn.slimsmart.thrift.rpc.zookeeper.ThriftServerAddressProvider;
 /**
  * 连接池,thrift-client for spring
  */
-public class ThriftClientPoolFactory extends BasePoolableObjectFactory<TServiceClient> {
+public class ThriftClientSinglePoolFactory extends BasePoolableObjectFactory<TServiceClient> {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private final ThriftServerAddressProvider serverAddressProvider;
 	private final TServiceClientFactory<TServiceClient> clientFactory;
 	private PoolOperationCallBack callback;
+	
+	private int serverId;
 
-	protected ThriftClientPoolFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory) throws Exception {
-		this.serverAddressProvider = addressProvider;
-		this.clientFactory = clientFactory;
-	}
+//	protected ThriftClientSinglePoolFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory) throws Exception {
+//		this.serverAddressProvider = addressProvider;
+//		this.clientFactory = clientFactory;
+//	}
 
-	protected ThriftClientPoolFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory,
-			PoolOperationCallBack callback) throws Exception {
+	protected ThriftClientSinglePoolFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory,
+			PoolOperationCallBack callback,int serverId) throws Exception {
 		this.serverAddressProvider = addressProvider;
 		this.clientFactory = clientFactory;
 		this.callback = callback;
+		this.serverId = serverId;
 	}
-
+	
+	
+	@Override
 	public void destroyObject(TServiceClient client) throws Exception {
 		if (callback != null) {
 			try {
@@ -72,7 +77,7 @@ public class ThriftClientPoolFactory extends BasePoolableObjectFactory<TServiceC
 
 	@Override
 	public TServiceClient makeObject() throws Exception {
-		InetSocketAddress address = serverAddressProvider.selector();
+		InetSocketAddress address = serverAddressProvider.findServerAddress(serverId);
 		if(address==null){
 			throw new ThriftException("No provider available for remote service");
 		}

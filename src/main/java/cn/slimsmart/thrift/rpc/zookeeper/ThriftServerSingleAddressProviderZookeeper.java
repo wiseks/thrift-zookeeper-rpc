@@ -29,7 +29,7 @@ import org.springframework.beans.factory.InitializingBean;
 /**
  * 使用zookeeper作为"config"中心,使用apache-curator方法库来简化zookeeper开发
  */
-public class ThriftServerAddressProviderZookeeper implements ThriftServerAddressProvider, InitializingBean ,Closeable{
+public class ThriftServerSingleAddressProviderZookeeper implements ThriftServerAddressProvider, InitializingBean ,Closeable{
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -65,10 +65,10 @@ public class ThriftServerAddressProviderZookeeper implements ThriftServerAddress
 		this.version = version;
 	}
 
-	public ThriftServerAddressProviderZookeeper() {
+	public ThriftServerSingleAddressProviderZookeeper() {
 	}
 
-	public ThriftServerAddressProviderZookeeper(CuratorFramework zkClient) {
+	public ThriftServerSingleAddressProviderZookeeper(CuratorFramework zkClient) {
 		this.zkClient = zkClient;
 	}
 

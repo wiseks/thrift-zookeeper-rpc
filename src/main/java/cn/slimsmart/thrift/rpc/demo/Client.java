@@ -1,7 +1,5 @@
 package cn.slimsmart.thrift.rpc.demo;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -14,8 +12,7 @@ import org.apache.thrift.transport.TTransport;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-
-import cn.slimsmart.thrift.rpc.ThriftServiceClientProxyFactory;
+import cn.slimsmart.thrift.rpc.ThriftServiceSingleClientProxyFactory;
 
 //客户端调用
 @SuppressWarnings("resource")
@@ -28,38 +25,49 @@ public class Client {
 	public static void spring() {
 		try {
 			final ApplicationContext context = new ClassPathXmlApplicationContext("spring-context-thrift-client.xml");
-			ThriftServiceClientProxyFactory factory = context.getBean(ThriftServiceClientProxyFactory.class);
-			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getService(EchoSerivce.Iface.class);
+			//ThriftServiceClientProxyFactory factory = context.getBean(ThriftServiceClientProxyFactory.class);
+			//EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getService(EchoSerivce.Iface.class);
+			ThriftServiceSingleClientProxyFactory factory = context.getBean(ThriftServiceSingleClientProxyFactory.class);
+			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getServiceByServerId(2,EchoSerivce.Iface.class);
+			Thread.sleep(2000);
 //			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
 			System.out.println(echoSerivce.echo("hello--echo"));
 			User user = echoSerivce.getUser(111L,0,0);
 			System.out.println(">>>>>>>>>"+user.getUserId()+","+user.getName());
 			Random random = new Random();
-			List<Integer> xList = new ArrayList<Integer>();
-			List<Integer> yList = new ArrayList<Integer>();
-			for(int i=-1000;i<=1000;i++){
-				xList.add(i);
-				yList.add(i);
+			for(int i=0;i<100;i++){
+				int index = random.nextInt(2)+1;
+				EchoSerivce.Iface echoSerivce1 = (EchoSerivce.Iface)factory.getServiceByServerId(index,EchoSerivce.Iface.class);
+//				EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
+				System.out.println(echoSerivce1.echo("hello--echo"));
 			}
-			for(int i=0;i<=200000;i++){
-				long playerId = i;// BeanUtil.idGenerator.nextId();
-				Cache.playerIds.put(i, playerId);
-			}
-			long start = System.currentTimeMillis();
-			for(int i=0;i<=200000;i++){
-				int x = xList.get(random.nextInt(xList.size()));
-				int y = yList.get(random.nextInt(xList.size()));
-				WorldViewTileResp resp = echoSerivce.viewWorld(Cache.playerIds.get(i), x, y);
-				List<WorldTileData> info = resp.getInfos();
-			}
-			long endTime = System.currentTimeMillis();
-			System.out.println("needTime="+(endTime-start));
+			
+//			Random random = new Random();
+//			List<Integer> xList = new ArrayList<Integer>();
+//			List<Integer> yList = new ArrayList<Integer>();
+//			for(int i=-1000;i<=1000;i++){
+//				xList.add(i);
+//				yList.add(i);
+//			}
+//			for(int i=0;i<=200000;i++){
+//				long playerId = i;// BeanUtil.idGenerator.nextId();
+//				Cache.playerIds.put(i, playerId);
+//			}
+//			long start = System.currentTimeMillis();
+//			for(int i=0;i<=200000;i++){
+//				int x = xList.get(random.nextInt(xList.size()));
+//				int y = yList.get(random.nextInt(xList.size()));
+//				WorldViewTileResp resp = echoSerivce.viewWorld(Cache.playerIds.get(i), x, y);
+//				List<WorldTileData> info = resp.getInfos();
+//			}
+//			long endTime = System.currentTimeMillis();
+//			System.out.println("needTime="+(endTime-start));
 			//关闭连接的钩子
 			Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
-                	Map<String,ThriftServiceClientProxyFactory>
-                	clientMap = context.getBeansOfType(ThriftServiceClientProxyFactory.class);
-                	for(Entry<String, ThriftServiceClientProxyFactory> client : clientMap.entrySet()){
+                	Map<String,ThriftServiceSingleClientProxyFactory>
+                	clientMap = context.getBeansOfType(ThriftServiceSingleClientProxyFactory.class);
+                	for(Entry<String, ThriftServiceSingleClientProxyFactory> client : clientMap.entrySet()){
                 		System.out.println("serviceName : "+client.getKey() + ",class obj: "+client.getValue());
                 		client.getValue().close();
                 	}

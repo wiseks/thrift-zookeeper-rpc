@@ -29,8 +29,20 @@
 		<property name="connectionTimeout" value="3000" />
 		<property name="sessionTimeout" value="3000" />
 		<property name="singleton" value="true" />
+		<property name="serverId" value="2" />
 	</bean>
     <bean id="echoSerivce" class="cn.slimsmart.thrift.rpc.ThriftServiceClientProxyFactory" destroy-method="close">
+        <property name="maxActive" value="5" />
+        <property name="idleTime" value="1800000" />
+        <property name="serverAddressProvider">
+        	<bean class="cn.slimsmart.thrift.rpc.zookeeper.ThriftServerAddressProviderZookeeper">
+        		<property name="service" value="cn.slimsmart.thrift.rpc.demo.EchoSerivce" />
+        		<property name="version" value="1.0.0" />
+        		<property name="zkClient" ref="thriftZookeeper" />
+        	</bean>
+        </property>
+    </bean>
+    <bean id="echoSingleSerivce" class="cn.slimsmart.thrift.rpc.ThriftServiceSingleClientProxyFactory" destroy-method="close">
         <property name="maxActive" value="5" />
         <property name="idleTime" value="1800000" />
         <property name="serverAddressProvider">

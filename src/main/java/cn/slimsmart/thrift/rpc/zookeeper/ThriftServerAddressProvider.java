@@ -3,6 +3,7 @@ package cn.slimsmart.thrift.rpc.zookeeper;
 import java.io.Closeable;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Map;
 
 /**
  * thrift server-service地址提供者,以便构建客户端连接池
@@ -16,7 +17,7 @@ public interface ThriftServerAddressProvider extends Closeable {
 	 * 获取所有服务端地址
 	 * @return
 	 */
-    List<InetSocketAddress> findServerAddressList();
+    Map<Integer,List<InetSocketAddress>> findServerAddressList();
 
     /**
      * 选取一个合适的address,可以随机获取等'
@@ -24,4 +25,11 @@ public interface ThriftServerAddressProvider extends Closeable {
      * @return
      */
     InetSocketAddress selector();
+    
+    /**
+     * 根据服务器ID获取地址
+     * @param serverId
+     * @return
+     */
+    InetSocketAddress findServerAddress(int serverId);
 }
