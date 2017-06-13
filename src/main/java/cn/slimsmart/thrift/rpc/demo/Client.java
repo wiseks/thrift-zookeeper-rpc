@@ -12,7 +12,7 @@ import org.apache.thrift.transport.TTransport;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import cn.slimsmart.thrift.rpc.ThriftServiceSingleClientProxyFactory;
+import cn.slimsmart.thrift.rpc.ThriftServiceClientSingleProxyFactory;
 
 //客户端调用
 @SuppressWarnings("resource")
@@ -27,7 +27,7 @@ public class Client {
 			final ApplicationContext context = new ClassPathXmlApplicationContext("spring-context-thrift-client.xml");
 			//ThriftServiceClientProxyFactory factory = context.getBean(ThriftServiceClientProxyFactory.class);
 			//EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getService(EchoSerivce.Iface.class);
-			ThriftServiceSingleClientProxyFactory factory = context.getBean(ThriftServiceSingleClientProxyFactory.class);
+			ThriftServiceClientSingleProxyFactory factory = context.getBean(ThriftServiceClientSingleProxyFactory.class);
 			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getServiceByServerId(2,EchoSerivce.Iface.class);
 			Thread.sleep(2000);
 //			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
@@ -65,9 +65,9 @@ public class Client {
 			//关闭连接的钩子
 			Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
-                	Map<String,ThriftServiceSingleClientProxyFactory>
-                	clientMap = context.getBeansOfType(ThriftServiceSingleClientProxyFactory.class);
-                	for(Entry<String, ThriftServiceSingleClientProxyFactory> client : clientMap.entrySet()){
+                	Map<String,ThriftServiceClientSingleProxyFactory>
+                	clientMap = context.getBeansOfType(ThriftServiceClientSingleProxyFactory.class);
+                	for(Entry<String, ThriftServiceClientSingleProxyFactory> client : clientMap.entrySet()){
                 		System.out.println("serviceName : "+client.getKey() + ",class obj: "+client.getValue());
                 		client.getValue().close();
                 	}

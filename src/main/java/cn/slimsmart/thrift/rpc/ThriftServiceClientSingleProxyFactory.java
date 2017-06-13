@@ -31,7 +31,7 @@ import cn.slimsmart.thrift.rpc.zookeeper.ThriftServerAddressProvider;
 /**
  * 客户端代理
  */
-public class ThriftServiceSingleClientProxyFactory implements InitializingBean,Closeable {
+public class ThriftServiceClientSingleProxyFactory implements InitializingBean,Closeable {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
