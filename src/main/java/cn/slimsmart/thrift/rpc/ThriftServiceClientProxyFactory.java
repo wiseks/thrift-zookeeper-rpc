@@ -43,9 +43,6 @@ public class ThriftServiceClientProxyFactory implements InitializingBean,Closeab
 
 	private GenericObjectPool<TServiceClient> clusterPool;
 	
-	private GenericObjectPool<TServiceClient> singlePool;
-	
-	
 	private static final String resourcePattern = "*$Iface.class";
 	
 	private String basePackage = "cn/slimsmart/thrift/rpc/*";
@@ -82,8 +79,6 @@ public class ThriftServiceClientProxyFactory implements InitializingBean,Closeab
 					Class<TServiceClientFactory<TServiceClient>> fi = (Class<TServiceClientFactory<TServiceClient>>) classLoader.loadClass(serverAddressProvider.getService() + "$Client$Factory");
 					TServiceClientFactory<TServiceClient> clientFactory = fi.newInstance();
 					ThriftClientPoolFactory clientClusterPool = new ThriftClientPoolFactory(serverAddressProvider, clientFactory, callback);
-					int serverId = 1;
-					ThriftClientSinglePoolFactory singlePool = new ThriftClientSinglePoolFactory(serverAddressProvider, clientFactory, callback, serverId);
 					GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
 					poolConfig.maxActive = maxActive;
 					poolConfig.maxIdle = 1;
