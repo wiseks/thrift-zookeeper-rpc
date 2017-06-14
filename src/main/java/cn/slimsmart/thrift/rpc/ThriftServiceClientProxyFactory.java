@@ -78,7 +78,7 @@ public class ThriftServiceClientProxyFactory implements InitializingBean,Closeab
 					@SuppressWarnings("unchecked")
 					Class<TServiceClientFactory<TServiceClient>> fi = (Class<TServiceClientFactory<TServiceClient>>) classLoader.loadClass(serverAddressProvider.getService() + "$Client$Factory");
 					TServiceClientFactory<TServiceClient> clientFactory = fi.newInstance();
-					ThriftClientPoolFactory clientClusterPool = new ThriftClientPoolFactory(serverAddressProvider, clientFactory, callback);
+					ThriftClientPoolClusterFactory clientClusterPool = new ThriftClientPoolClusterFactory(serverAddressProvider, clientFactory, callback);
 					GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
 					poolConfig.maxActive = maxActive;
 					poolConfig.maxIdle = 1;

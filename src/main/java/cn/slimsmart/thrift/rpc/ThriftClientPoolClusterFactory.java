@@ -18,7 +18,7 @@ import cn.slimsmart.thrift.rpc.zookeeper.ThriftServerAddressProvider;
 /**
  * 连接池,thrift-client for spring
  */
-public class ThriftClientPoolFactory extends BasePoolableObjectFactory<TServiceClient> {
+public class ThriftClientPoolClusterFactory extends BasePoolableObjectFactory<TServiceClient> {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -26,12 +26,12 @@ public class ThriftClientPoolFactory extends BasePoolableObjectFactory<TServiceC
 	private final TServiceClientFactory<TServiceClient> clientFactory;
 	private PoolOperationCallBack callback;
 
-	protected ThriftClientPoolFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory) throws Exception {
+	protected ThriftClientPoolClusterFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory) throws Exception {
 		this.serverAddressProvider = addressProvider;
 		this.clientFactory = clientFactory;
 	}
 
-	protected ThriftClientPoolFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory,
+	protected ThriftClientPoolClusterFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory,
 			PoolOperationCallBack callback) throws Exception {
 		this.serverAddressProvider = addressProvider;
 		this.clientFactory = clientFactory;
