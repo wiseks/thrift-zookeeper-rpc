@@ -28,19 +28,19 @@ public class Client {
 			//ThriftServiceClientProxyFactory factory = context.getBean(ThriftServiceClientProxyFactory.class);
 			//EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getService(EchoSerivce.Iface.class);
 			ThriftServiceClientSingleProxyFactory factory = context.getBean(ThriftServiceClientSingleProxyFactory.class);
-			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getServiceByServerId(2,EchoSerivce.Iface.class);
+			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface)factory.getServiceByServerId(1,EchoSerivce.Iface.class);
 			Thread.sleep(2000);
 //			EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
 			System.out.println(echoSerivce.echo("hello--echo"));
 			User user = echoSerivce.getUser(111L,0,0);
 			System.out.println(">>>>>>>>>"+user.getUserId()+","+user.getName());
 			Random random = new Random();
-			for(int i=0;i<100;i++){
-				int index = random.nextInt(2)+1;
-				EchoSerivce.Iface echoSerivce1 = (EchoSerivce.Iface)factory.getServiceByServerId(index,EchoSerivce.Iface.class);
-//				EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
-				System.out.println(echoSerivce1.echo("hello--echo"));
-			}
+//			for(int i=0;i<100;i++){
+//				int index = random.nextInt(2)+1;
+//				EchoSerivce.Iface echoSerivce1 = (EchoSerivce.Iface)factory.getServiceByServerId(index,EchoSerivce.Iface.class);
+////				EchoSerivce.Iface echoSerivce = (EchoSerivce.Iface) context.getBean("echoSerivce");
+//				System.out.println(echoSerivce1.echo("hello--echo"));
+//			}
 			
 //			Random random = new Random();
 //			List<Integer> xList = new ArrayList<Integer>();
