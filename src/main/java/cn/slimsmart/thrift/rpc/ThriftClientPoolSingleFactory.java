@@ -28,11 +28,6 @@ public class ThriftClientPoolSingleFactory extends BasePoolableObjectFactory<TSe
 	
 	private int serverId;
 
-//	protected ThriftClientSinglePoolFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory) throws Exception {
-//		this.serverAddressProvider = addressProvider;
-//		this.clientFactory = clientFactory;
-//	}
-
 	protected ThriftClientPoolSingleFactory(ThriftServerAddressProvider addressProvider, TServiceClientFactory<TServiceClient> clientFactory,
 			PoolOperationCallBack callback,int serverId) throws Exception {
 		this.serverAddressProvider = addressProvider;
@@ -69,9 +64,9 @@ public class ThriftClientPoolSingleFactory extends BasePoolableObjectFactory<TSe
 	@Override
 	public boolean validateObject(TServiceClient client) {
 		TTransport pin = client.getInputProtocol().getTransport();
-		//logger.info("validateObject input:{}", pin.isOpen());
+		logger.info("validateObject input:{}", pin.isOpen());
 		TTransport pout = client.getOutputProtocol().getTransport();
-		//logger.info("validateObject output:{}", pout.isOpen());
+		logger.info("validateObject output:{}", pout.isOpen());
 		return pin.isOpen() && pout.isOpen();
 	}
 
