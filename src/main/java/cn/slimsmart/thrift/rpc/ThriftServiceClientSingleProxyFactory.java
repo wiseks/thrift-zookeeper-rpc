@@ -31,8 +31,8 @@ import cn.slimsmart.thrift.rpc.zookeeper.ThriftServerAddressProvider;
 /**
  * 客户端代理
  */
-public class ThriftServiceClientSingleProxyFactory implements InitializingBean,Closeable {
-	
+public class ThriftServiceClientSingleProxyFactory implements InitializingBean, Closeable {
+
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	private Integer maxActive = 32;// 最大活跃连接数
@@ -42,25 +42,33 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 	private Integer idleTime = 180000;
 	private ThriftServerAddressProvider serverAddressProvider;
 
-	private Map<Integer,Map<Class<?>,Object>> serverIdToMap = new HashMap<>();
+	private Map<Integer, Map<Class<?>, Object>> serverIdToMap = new HashMap<>();
 
 	private List<GenericObjectPool<TServiceClient>> clusterPoolList = new ArrayList<>();
-	
+
 	private static final String resourcePattern = "*$Iface.class";
-	
+
 	private String basePackage = "cn/slimsmart/thrift/rpc/*";
-	
+
 	private ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 
 	private MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
-
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		String[] basePackages = basePackage.split(",");
+		GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
+		poolConfig.maxActive = maxActive;
+		poolConfig.maxIdle = 1;
+		poolConfig.minIdle = 0;
+		poolConfig.minEvictableIdleTimeMillis = idleTime;
+		poolConfig.timeBetweenEvictionRunsMillis = idleTime * 2L;
+		poolConfig.testOnBorrow = true;
+		poolConfig.testOnReturn = false;
+		poolConfig.testWhileIdle = false;
 		for (String basePackageName : basePackages) {
-			if(basePackageName==null||basePackageName.equals("")){
+			if (basePackageName == null || basePackageName.equals("")) {
 				continue;
 			}
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + basePackageName + "/"
@@ -76,51 +84,50 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 					String className = classMetadata.getClassName();
 					// 加载Iface接口
 					Class<?> objectClass = ClassUtils.forName(className, ClassUtils.getDefaultClassLoader());
-//					objectClass = classLoader.loadClass(serverAddressProvider.getService() + "$Iface");
+					// objectClass =
+					// classLoader.loadClass(serverAddressProvider.getService()
+					// + "$Iface");
 					// 加载Client.Factory类
 					@SuppressWarnings("unchecked")
-					Class<TServiceClientFactory<TServiceClient>> fi = (Class<TServiceClientFactory<TServiceClient>>) classLoader.loadClass(serverAddressProvider.getService() + "$Client$Factory");
+					Class<TServiceClientFactory<TServiceClient>> fi = (Class<TServiceClientFactory<TServiceClient>>) classLoader
+							.loadClass(serverAddressProvider.getService() + "$Client$Factory");
 					TServiceClientFactory<TServiceClient> clientFactory = fi.newInstance();
-					//ThriftClientPoolFactory clientClusterPool = new ThriftClientPoolFactory(serverAddressProvider, clientFactory, callback);
+					// ThriftClientPoolFactory clientClusterPool = new
+					// ThriftClientPoolFactory(serverAddressProvider,
+					// clientFactory, callback);
 					Set<Integer> keySet = serverAddressProvider.findServerAddressList().keySet();
-					for(int serverId : keySet){
-						Map<Class<?>,Object> currentMap = serverIdToMap.get(serverId);
-						if(currentMap==null){
+					for (int serverId : keySet) {
+						Map<Class<?>, Object> currentMap = serverIdToMap.get(serverId);
+						if (currentMap == null) {
 							currentMap = new HashMap<>();
 							serverIdToMap.put(serverId, currentMap);
 						}
-						ThriftClientPoolSingleFactory clientClusterPool = new ThriftClientPoolSingleFactory(serverAddressProvider, clientFactory, callback, serverId);
-						GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
-						poolConfig.maxActive = maxActive;
-						poolConfig.maxIdle = 1;
-						poolConfig.minIdle = 0;
-						poolConfig.minEvictableIdleTimeMillis = idleTime;
-						poolConfig.timeBetweenEvictionRunsMillis = idleTime * 2L;
-						poolConfig.testOnBorrow=true;
-						poolConfig.testOnReturn=false;
-						poolConfig.testWhileIdle=false;
-						final GenericObjectPool<TServiceClient> clusterPool = new GenericObjectPool<TServiceClient>(clientClusterPool, poolConfig);
+						ThriftClientPoolSingleFactory clientClusterPool = new ThriftClientPoolSingleFactory(
+								serverAddressProvider, clientFactory, callback, serverId);
+						final GenericObjectPool<TServiceClient> clusterPool = new GenericObjectPool<TServiceClient>(
+								clientClusterPool, poolConfig);
 						clusterPoolList.add(clusterPool);
-						Object proxyClient = Proxy.newProxyInstance(classLoader, new Class[] { objectClass }, new InvocationHandler() {
-							@Override
-							public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-								//
-								TServiceClient client = clusterPool.borrowObject();
-								boolean flag = true;
-								try {
-									return method.invoke(client, args);
-								} catch (Exception e) {
-									flag = false;
-									throw e;
-								} finally {
-									if(flag){
-										clusterPool.returnObject(client);
-									}else{
-										clusterPool.invalidateObject(client);
+						Object proxyClient = Proxy.newProxyInstance(classLoader, new Class[] { objectClass },
+								new InvocationHandler() {
+									@Override
+									public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+										//
+										TServiceClient client = clusterPool.borrowObject();
+										boolean flag = true;
+										try {
+											return method.invoke(client, args);
+										} catch (Exception e) {
+											flag = false;
+											throw e;
+										} finally {
+											if (flag) {
+												clusterPool.returnObject(client);
+											} else {
+												clusterPool.invalidateObject(client);
+											}
+										}
 									}
-								}
-							}
-						});
+								});
 						currentMap.put(objectClass, proxyClient);
 					}
 				}
@@ -130,8 +137,7 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 			}
 		}
 	}
-	
-	
+
 	private PoolOperationCallBack callback = new PoolOperationCallBack() {
 		@Override
 		public void make(TServiceClient client) {
@@ -143,7 +149,7 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 			logger.info("destroy");
 		}
 	};
-	
+
 	public void setMaxActive(Integer maxActive) {
 		this.maxActive = maxActive;
 	}
@@ -155,10 +161,10 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 	public void setServerAddressProvider(ThriftServerAddressProvider serverAddressProvider) {
 		this.serverAddressProvider = serverAddressProvider;
 	}
-	
-	public Object getServiceByServerId(int serverId,Class<?> clazz){
-		Map<Class<?>,Object> map = this.serverIdToMap.get(serverId);
-		if(map!=null){
+
+	public Object getServiceByServerId(int serverId, Class<?> clazz) {
+		Map<Class<?>, Object> map = this.serverIdToMap.get(serverId);
+		if (map != null) {
 			return map.get(clazz);
 		}
 		return null;
@@ -166,8 +172,8 @@ public class ThriftServiceClientSingleProxyFactory implements InitializingBean,C
 
 	@Override
 	public void close() {
-		for(GenericObjectPool<TServiceClient> clusterPool : clusterPoolList){
-			if(clusterPool!=null){
+		for (GenericObjectPool<TServiceClient> clusterPool : clusterPoolList) {
+			if (clusterPool != null) {
 				try {
 					clusterPool.close();
 				} catch (Exception e) {
